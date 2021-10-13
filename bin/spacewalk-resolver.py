@@ -101,6 +101,13 @@ class SpacewalkResolverPlugin(Plugin):
                 self.auth_headers[k] = v
         #self.answer("META", li)
 
+        proxystr = ""
+        if rhnChannel.config.cfg['enableProxy'] == 1:
+            proxy_config = rhnChannel.config.getProxySetting()
+            if proxy_config:
+                (proxy_host, proxy_port) = proxy_config.split(':')
+                proxystr = "&proxy=%s&proxyport=%s" % (proxy_host, proxy_port)
+
         # url is a list, use the one provided by the given server
         if type(self.channel['url']) == type([]):
             self.channel['url'] = self.channel['url'][server]
@@ -109,6 +116,7 @@ class SpacewalkResolverPlugin(Plugin):
             timeoutstr = "&timeout=%d" % timeout
         url = "%s/GET-REQ/%s?head_requests=no%s" % (self.channel['url'],
                                                     self.channel['label'],
+                                                    proxystr,
                                                     timeoutstr)
 
         self.answer("RESOLVEDURL", self.auth_headers, url)
